@@ -1,6 +1,6 @@
-import { Board } from "../interfaces/board.interface";
-import { BoardSchema } from "../schema/board.schema";
-import { prisma } from "./prisma.service";
+import { Board } from "@interfaces/board.interface";
+import { BoardSchema } from "@schemas/board.schema";
+import { prisma } from "@services/prisma.service";
 
 export const validateBoard = (object: any) => {
   const result = BoardSchema.safeParse(object);

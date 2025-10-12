@@ -1,5 +1,5 @@
 import express from "express";
-import { boardRouter } from "./routers/board.router";
+import { boardRouter } from "@routers/board.router";
 
 const app = express();
 

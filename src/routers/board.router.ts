@@ -5,7 +5,7 @@ import {
   getUniqueBoard,
   upsertBoard,
   validateBoard,
-} from "../services/board.service";
+} from "@services/board.service";
 
 export const boardRouter = Router();
 
