@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch --env-file .env index.ts",
-    "prisma": "npx prisma studio"
+    "prisma": "npx prisma studio",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -18,7 +19,10 @@
   },
   "devDependencies": {
     "@types/express": "^5.0.3",
+    "@types/jest": "^30.0.0",
+    "jest": "^30.2.0",
     "prisma": "^6.17.1",
+    "ts-jest": "^29.4.5",
     "tsx": "^4.20.6"
   }
 }
