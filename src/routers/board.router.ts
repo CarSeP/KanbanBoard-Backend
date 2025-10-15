@@ -1,4 +1,4 @@
-import { boardController } from "controller/board.controller";
+import { boardController } from "@controller/board.controller";
 import { Router } from "express";
 
 export const boardRouter = Router();

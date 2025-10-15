@@ -13,7 +13,8 @@
       "@interfaces/*": ["interfaces/*"],
       "@routers/*": ["routers/*"],
       "@schemas/*": ["schemas/*"],
-      "@services/*": ["services/*"]
+      "@services/*": ["services/*"],
+      "@controller/*": ["controller/*"]
     }
   },
   "include": ["src/**/*"],
