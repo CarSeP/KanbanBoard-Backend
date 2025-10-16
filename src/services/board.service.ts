@@ -2,7 +2,7 @@ import { Board } from "@interfaces/board.interface";
 import { BoardSchema } from "@schemas/board.schema";
 import { prisma } from "@services/prisma.service";
 
-export const validateBoard = (object: any) => {
+export const validateBoard = (object: unknown) => {
   const result = BoardSchema.safeParse(object);
 
   if (!result.success) {
@@ -36,6 +36,13 @@ export const getUniqueBoard = async (id: string) => {
     where: {
       id,
     },
+    include: {
+      columns: {
+        include: {
+          cards: true,
+        },
+      },
+    },
   });
 
   return board;
@@ -61,11 +68,10 @@ export const upsertBoard = async (board: Board) => {
   const exist = await existBoard(board.id);
 
   if (exist) {
-    updateBoard(board);
-    return;
+    return [updateBoard(board), "update"];
   }
 
-  createBoard(board);
+  return [createBoard(board), "create"];
 };
 
 const existBoard = async (id: string) => {
@@ -77,13 +83,13 @@ const existBoard = async (id: string) => {
 };
 
 const createBoard = async (board: Board) => {
-  await prisma.board.create({
+  return await prisma.board.create({
     data: board,
   });
 };
 
 const updateBoard = async (board: Board) => {
-  await prisma.board.update({
+  return await prisma.board.update({
     where: {
       id: board.id,
     },
