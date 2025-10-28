@@ -10,6 +10,10 @@ export default {
     '!src/**/*.test.ts',
     '!src/**/*.spec.ts'
   ],
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+    '^@services/(.*)$': '<rootDir>/src/services/$1',
+  },
   coverageDirectory: 'coverage',
   verbose: true
 };
