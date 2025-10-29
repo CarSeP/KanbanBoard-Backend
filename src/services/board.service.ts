@@ -1,6 +1,7 @@
 import { Board } from "@interfaces/board.interface";
 import { BoardSchema } from "@schemas/board.schema";
 import { prisma } from "@services/prisma.service";
+import { generateId } from "./id.service";
 
 export const validateBoard = (object: unknown) => {
   const result = BoardSchema.safeParse(object);
@@ -75,6 +76,8 @@ export const upsertBoard = async (board: Board) => {
 };
 
 const existBoard = async (id: string) => {
+  if (!id) return false;
+
   return await prisma.board.findUnique({
     where: {
       id,
@@ -83,6 +86,7 @@ const existBoard = async (id: string) => {
 };
 
 const createBoard = async (board: Board) => {
+  if (!board.id) board.id = generateId(7)
   return await prisma.board.create({
     data: board,
   });
