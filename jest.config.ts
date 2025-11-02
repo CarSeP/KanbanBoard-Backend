@@ -13,6 +13,7 @@ export default {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
     '^@services/(.*)$': '<rootDir>/src/services/$1',
+    '^@schemas/(.*)$': '<rootDir>/src/schemas/$1',
   },
   coverageDirectory: 'coverage',
   verbose: true
