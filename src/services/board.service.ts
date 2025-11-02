@@ -69,13 +69,13 @@ export const upsertBoard = async (board: Board) => {
   const exist = await existBoard(board.id);
 
   if (exist) {
-    return [updateBoard(board), "update"];
+    return [await updateBoard(board), "update"];
   }
 
-  return [createBoard(board), "create"];
+  return [await createBoard(board), "create"];
 };
 
-const existBoard = async (id: string) => {
+export const existBoard = async (id: string) => {
   if (!id) return false;
 
   return await prisma.board.findUnique({
@@ -85,14 +85,14 @@ const existBoard = async (id: string) => {
   });
 };
 
-const createBoard = async (board: Board) => {
+export const createBoard = async (board: Board) => {
   if (!board.id) board.id = generateId(7)
   return await prisma.board.create({
     data: board,
   });
 };
 
-const updateBoard = async (board: Board) => {
+export const updateBoard = async (board: Board) => {
   return await prisma.board.update({
     where: {
       id: board.id,

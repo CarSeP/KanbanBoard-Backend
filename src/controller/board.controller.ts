@@ -84,7 +84,7 @@ const upsertOne = async (req: Request, res: Response) => {
     const [board, action] = await upsertBoard(body);
     return res.status(200).json({
       success: true,
-      board: await board,
+      board,
       action,
     });
   } catch (error) {
