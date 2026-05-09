@@ -2,7 +2,9 @@ import { Card } from "@interfaces/card.interface";
 import { CardSchema } from "@schemas/card.schema";
 import { prisma } from "./prisma.service";
 
-export const upsertCard = async (card: Card) => {
+type CardType = Omit<Card, "id"> & { id?: number };
+
+export const upsertCard = async (card: CardType): Promise<[Card, string]> => {
   const exist = await existCard(card.id);
 
   if (exist) {
@@ -51,9 +53,11 @@ export const moveCard = async (id: number, columnId: number, order: number) => {
     return card;
   }
 
-  const [,, card] = await prisma.$transaction([
+  const [, , card] = await prisma.$transaction([
     prisma.card.updateMany({
-      where: { AND: [{ columnId: exist.columnId }, { order: { gt: exist.order } }] },
+      where: {
+        AND: [{ columnId: exist.columnId }, { order: { gt: exist.order } }],
+      },
       data: { order: { decrement: 1 } },
     }),
     prisma.card.updateMany({
@@ -86,7 +90,7 @@ export const validateCard = (object: unknown) => {
   };
 };
 
-const existCard = async (id: number) => {
+const existCard = async (id: number | undefined) => {
   if (!id) return false;
 
   return await prisma.card.findUnique({
@@ -96,13 +100,13 @@ const existCard = async (id: number) => {
   });
 };
 
-const createCard = async (card: Card) => {
+const createCard = async (card: CardType) => {
   return await prisma.card.create({
     data: card,
   });
 };
 
-const updateCard = async (card: Card) => {
+const updateCard = async (card: CardType) => {
   return await prisma.card.update({
     where: {
       id: card.id,

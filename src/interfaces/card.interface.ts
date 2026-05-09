@@ -1,7 +1,7 @@
 export interface Card {
   id: number;
   title: string;
-  content?: string;
+  content: string | null;
   order: number;
   columnId: number;
   createdAt?: Date;

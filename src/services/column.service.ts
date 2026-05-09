@@ -2,7 +2,9 @@ import { Column } from "@interfaces/column.interface";
 import { ColumnSchema } from "@schemas/column.schema";
 import { prisma } from "@services/prisma.service";
 
-export const upsertColumn = async (column: Column) => {
+type ColumnType = Omit<Column, "id"> & { id?: number };
+
+export const upsertColumn = async (column: ColumnType): Promise<[Column, string]> => {
   const exist = await existColumn(column.id);
 
   if (exist) {
@@ -78,7 +80,7 @@ export const validateColumn = (object: unknown) => {
   };
 };
 
-const existColumn = async (id: number) => {
+const existColumn = async (id: number | undefined) => {
   if (!id) return false;
 
   return await prisma.column.findUnique({
@@ -88,13 +90,13 @@ const existColumn = async (id: number) => {
   });
 };
 
-const createColumn = async (column: Column) => {
+const createColumn = async (column: ColumnType) => {
   return await prisma.column.create({
     data: column,
   });
 };
 
-const updateColumn = async (column: Column) => {
+const updateColumn = async (column: ColumnType) => {
   return await prisma.column.update({
     where: {
       id: column.id,
