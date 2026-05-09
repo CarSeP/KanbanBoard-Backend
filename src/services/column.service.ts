@@ -6,10 +6,10 @@ export const upsertColumn = async (column: Column) => {
   const exist = await existColumn(column.id);
 
   if (exist) {
-    return [updateColumn(column), "update"];
+    return [await updateColumn(column), "update"];
   }
 
-  return [createColumn(column), "create"];
+  return [await createColumn(column), "create"];
 };
 
 export const deleteColumn = async (id: number) => {

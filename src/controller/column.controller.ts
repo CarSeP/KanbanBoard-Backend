@@ -21,7 +21,7 @@ const upsertOne = async (req: Request, res: Response) => {
     const [column, action] = await upsertColumn(body);
     return res.status(200).json({
       success: true,
-      column: await column,
+      column: column,
       action,
     });
   } catch (error) {
