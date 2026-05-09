@@ -1,4 +1,4 @@
-import { deleteCard, upsertCard, validateCard } from "@services/card.service";
+import { deleteCard, moveCard, upsertCard, validateCard } from "@services/card.service";
 import { Request, Response } from "express";
 
 const upsertOne = async (req: Request, res: Response) => {
@@ -50,7 +50,35 @@ const deleteOne = async (req: Request, res: Response) => {
   }
 };
 
+const moveOne = async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+    const columnId = Number(req.params.columnId);
+    const order = Number(req.params.order);
+
+    const card = await moveCard(id, columnId, order);
+
+    if (!card) {
+      return res.status(404).json({
+        success: false,
+        message: ["Card not found"],
+      });
+    }
+
+    return res.json({
+      success: true,
+      card,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: ["Server error"],
+    });
+  }
+};
+
 export const cardController = {
   upsertOne,
   deleteOne,
+  moveOne,
 };

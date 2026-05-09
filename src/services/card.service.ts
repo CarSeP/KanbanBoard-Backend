@@ -24,6 +24,48 @@ export const deleteCard = async (id: number) => {
   });
 };
 
+export const moveCard = async (id: number, columnId: number, order: number) => {
+  const exist = await existCard(id);
+  if (!exist) return false;
+
+  if (exist.columnId === columnId) {
+    const shiftCondition =
+      exist.order < order
+        ? { where: { lte: order }, data: { decrement: 1 } }
+        : { where: { gte: order }, data: { increment: 1 } };
+
+    const [card] = await prisma.$transaction([
+      prisma.card.update({ where: { id }, data: { order } }),
+      prisma.card.updateMany({
+        where: {
+          AND: [
+            { id: { not: id } },
+            { columnId },
+            { order: shiftCondition.where },
+          ],
+        },
+        data: { order: shiftCondition.data },
+      }),
+    ]);
+
+    return card;
+  }
+
+  const [,, card] = await prisma.$transaction([
+    prisma.card.updateMany({
+      where: { AND: [{ columnId: exist.columnId }, { order: { gt: exist.order } }] },
+      data: { order: { decrement: 1 } },
+    }),
+    prisma.card.updateMany({
+      where: { AND: [{ columnId }, { order: { gte: order } }] },
+      data: { order: { increment: 1 } },
+    }),
+    prisma.card.update({ where: { id }, data: { columnId, order } }),
+  ]);
+
+  return card;
+};
+
 export const validateCard = (object: unknown) => {
   const result = CardSchema.safeParse(object);
 
