@@ -2,19 +2,20 @@
   "compilerOptions": {
     "target": "es2016",
     "module": "commonjs",
+    "rootDir": "./src",
     "outDir": "./dist",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
-    "baseUrl": "./src",
+    "types": ["node", "jest"],
     "paths": {
-      "@interfaces/*": ["interfaces/*"],
-      "@routers/*": ["routers/*"],
-      "@schemas/*": ["schemas/*"],
-      "@services/*": ["services/*"],
-      "@controller/*": ["controller/*"]
+      "@interfaces/*": ["./src/interfaces/*"],
+      "@routers/*": ["./src/routers/*"],
+      "@schemas/*": ["./src/schemas/*"],
+      "@services/*": ["./src/services/*"],
+      "@controller/*": ["./src/controller/*"]
     }
   },
   "include": ["src/**/*"],
