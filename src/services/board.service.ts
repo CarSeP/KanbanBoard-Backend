@@ -39,8 +39,17 @@ export const getUniqueBoard = async (id: string) => {
     },
     include: {
       columns: {
+        orderBy: [
+          { order: "asc" },
+          { createdAt: "asc" },
+        ],
         include: {
-          cards: true,
+          cards: {
+            orderBy: [
+              { order: "asc" },
+              { createdAt: "asc" },
+            ],
+          },
         },
       },
     },
