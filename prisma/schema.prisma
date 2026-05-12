@@ -14,12 +14,49 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Provider {
+  GOOGLE
+  GUEST
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  EDITOR
+  VIEWER
+}
+
+model User {
+  id        String        @id @default(cuid())
+  email     String?       @unique @db.VarChar(255)
+  name      String        @db.VarChar(100)
+  provider  Provider      @default(GUEST)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  boardMembers BoardMember[]
+}
+
 model Board {
-  id        String   @id @db.VarChar(7)
-  name      String   @db.VarChar(30)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String        @id @db.VarChar(7)
+  name      String        @db.VarChar(30)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
   columns   Column[]
+  boardMembers BoardMember[]
+}
+
+model BoardMember {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  board     Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  boardId   String
+  role      Role     @default(VIEWER)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, boardId])
+  @@index([userId])
+  @@index([boardId])
 }
 
 model Column {
