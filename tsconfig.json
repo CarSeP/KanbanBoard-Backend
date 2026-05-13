@@ -15,7 +15,8 @@
       "@routers/*": ["./src/routers/*"],
       "@schemas/*": ["./src/schemas/*"],
       "@services/*": ["./src/services/*"],
-      "@controller/*": ["./src/controller/*"]
+      "@controller/*": ["./src/controller/*"],
+      "@middlewares/*": ["./src/middlewares/*"]
     }
   },
   "include": ["src/**/*"],

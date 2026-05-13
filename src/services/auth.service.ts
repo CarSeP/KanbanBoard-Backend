@@ -17,3 +17,28 @@ export const getToken = async (userId: string) => {
   const token = jwt.sign({ id: userId, iat: Date.now() }, secret);
   return token;
 };
+
+export const validateToken = async (token: string): Promise<[boolean, any]> => {
+  const secret = process.env.JWT_SECRET ?? "";
+  try {
+    const decoded = jwt.verify(token, secret);
+
+    if (typeof decoded === "string") {
+      return [false, null];
+    }
+
+    const user = prisma.user.findUnique({
+      where: {
+        id: decoded.id,
+      },
+    });
+
+    if (!user) {
+      return [false, null];
+    }
+
+    return [true, user];
+  } catch (error) {
+    return [false, null];
+  }
+};
