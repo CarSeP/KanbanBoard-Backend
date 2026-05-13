@@ -1,6 +1,5 @@
-export const generateId = (length: number) => {
-  const characters =
-    "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890";
+export const generateId = (length: number, str?: string) => {
+  const characters = str || "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890";
   let id = "";
   for (let i = 0; i < length; i++) {
     const random = Math.floor(Math.random() * characters.length);

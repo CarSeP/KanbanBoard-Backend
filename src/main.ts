@@ -7,6 +7,7 @@ import { swaggerRouter } from "@routers/swagger.router";
 import { notFoundRouter } from "@routers/notFound.router";
 import { columnRouter } from "@routers/column.router";
 import { cardRouter } from "@routers/card.router";
+import { authRouter } from "@routers/auth.router";
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(express.json());
 app.use(pino());
 app.use(cors(getCors()));
 
+app.use("/auth", authRouter);
 app.use("/swagger", swaggerRouter);
 app.use("/board", boardRouter);
 app.use("/column", columnRouter);
