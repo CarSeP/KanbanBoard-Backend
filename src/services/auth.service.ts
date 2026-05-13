@@ -1,3 +1,4 @@
+import { User } from "@interfaces/user.interface";
 import { generateId } from "./id.service";
 import { prisma } from "./prisma.service";
 import jwt from "jsonwebtoken";
@@ -18,7 +19,7 @@ export const getToken = async (userId: string) => {
   return token;
 };
 
-export const validateToken = async (token: string): Promise<[boolean, any]> => {
+export const validateToken = async (token: string): Promise<[boolean, User | null]> => {
   const secret = process.env.JWT_SECRET ?? "";
   try {
     const decoded = jwt.verify(token, secret);
@@ -27,7 +28,7 @@ export const validateToken = async (token: string): Promise<[boolean, any]> => {
       return [false, null];
     }
 
-    const user = prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: {
         id: decoded.id,
       },

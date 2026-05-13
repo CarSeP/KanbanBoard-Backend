@@ -1,3 +1,4 @@
+import { User } from "@interfaces/user.interface";
 import { validateToken } from "@services/auth.service";
 import { NextFunction, Request, Response } from "express";
 
@@ -32,7 +33,7 @@ export const authMiddleware = async (
 declare global {
   namespace Express {
     interface Request {
-      user: any;
+      user: User | null;
     }
   }
 }
