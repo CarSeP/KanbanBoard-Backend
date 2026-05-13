@@ -19,7 +19,7 @@ export const authMiddleware = async (
 
   const [isValid, user] = await validateToken(token);
 
-  if (!isValid) {
+  if (!isValid || !user) {
     return res.status(401).json({
       success: false,
       message: ["Invalid or expired token"],
@@ -33,7 +33,7 @@ export const authMiddleware = async (
 declare global {
   namespace Express {
     interface Request {
-      user: User | null;
+      user: User;
     }
   }
 }

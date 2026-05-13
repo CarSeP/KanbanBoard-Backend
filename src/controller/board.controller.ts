@@ -6,10 +6,12 @@ import {
   upsertBoard,
   validateBoard,
 } from "@services/board.service";
+import { hasPermission } from "@services/auth.service";
 
 const getAll = async (req: Request, res: Response) => {
   try {
-    const [boards, totalCount] = await getAllBoards();
+    const userID = req.user.id;
+    const [boards, totalCount] = await getAllBoards(userID);
 
     return res.status(200).json({
       success: true,
@@ -27,7 +29,8 @@ const getAll = async (req: Request, res: Response) => {
 const getOne = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
-    const board = await getUniqueBoard(id);
+    const userID = req.user.id;
+    const board = await getUniqueBoard(id, userID);
 
     if (!board)
       return res.status(404).json({
@@ -50,6 +53,16 @@ const getOne = async (req: Request, res: Response) => {
 const deleteOne = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
+    const userID = req.user.id;
+    const canDeleteBoard = await hasPermission(userID, id, "OWNER");
+
+    if (!canDeleteBoard) {
+      return res.status(403).json({
+        success: false,
+        message: ["You don't have permission to delete this board"],
+      });
+    }
+
     const board = await deleteBoard(id);
 
     if (!board)
@@ -81,7 +94,16 @@ const upsertOne = async (req: Request, res: Response) => {
       });
     }
 
-    const [board, action] = await upsertBoard(body);
+    const userID = req.user.id;
+    const [board, action, permissionError] = await upsertBoard(body, userID);
+
+    if (permissionError) {
+      return res.status(403).json({
+        success: false,
+        message: ["You don't have permission to edit this board"],
+      });
+    }
+
     return res.status(200).json({
       success: true,
       board,
