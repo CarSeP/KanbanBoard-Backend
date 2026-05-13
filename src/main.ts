@@ -15,10 +15,9 @@ const app = express();
 app.use(express.json());
 app.use(pino());
 app.use(cors(getCors()));
-
+app.use("/swagger", swaggerRouter);
 app.use("/auth", authRouter);
 app.use(authMiddleware);
-app.use("/swagger", swaggerRouter);
 app.use("/board", boardRouter);
 app.use("/column", columnRouter);
 app.use("/card", cardRouter);
