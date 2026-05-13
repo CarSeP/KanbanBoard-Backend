@@ -1,0 +1,4 @@
+@authToken =
+
+GET http://localhost:3000/board
+Authorization: Bearer {{authToken}}

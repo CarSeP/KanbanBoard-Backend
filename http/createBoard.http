@@ -1,0 +1,10 @@
+@authToken =
+@name =
+
+PUT http://localhost:3000/board
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "name": "{{name}}"
+}
