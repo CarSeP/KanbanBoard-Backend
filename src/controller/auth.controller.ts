@@ -1,4 +1,8 @@
-import { createUserAsGuest, getToken } from "@services/auth.service";
+import {
+  createUserAsGuest,
+  getToken,
+  validateToken,
+} from "@services/auth.service";
 import { Request, Response } from "express";
 
 const signInAsGuest = async (req: Request, res: Response) => {
@@ -23,7 +27,7 @@ const signInAsGuest = async (req: Request, res: Response) => {
       success: true,
       user: { id, name, updatedAt },
     });
-  } catch (error) {
+  } catch {
     return res.status(500).json({
       success: false,
       message: ["Server error"],
@@ -31,6 +35,29 @@ const signInAsGuest = async (req: Request, res: Response) => {
   }
 };
 
+const validateSession = async (req: Request, res: Response) => {
+  const token = req.headers.authorization;
+
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      message: ["No authentication token provided"],
+    });
+  }
+
+  const [isValid, user] = await validateToken(token);
+
+  if (!isValid || !user) {
+    return res.status(401).json({
+      success: false,
+      message: ["Invalid or expired token"],
+    });
+  }
+
+  return res.status(200).json({ success: true, token });
+};
+
 export const authController = {
   signInAsGuest,
+  validateSession,
 };

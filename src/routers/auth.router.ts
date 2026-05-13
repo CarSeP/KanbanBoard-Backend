@@ -4,3 +4,4 @@ import { Router } from "express";
 export const authRouter = Router();
 
 authRouter.post("/register/guest", authController.signInAsGuest);
+authRouter.get("/validate", authController.validateSession);
