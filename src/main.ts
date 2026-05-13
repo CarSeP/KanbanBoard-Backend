@@ -1,6 +1,7 @@
 import express from "express";
 import pino from "pino-http";
 import cors from "cors";
+import { getCors } from "@services/cors.service";
 import { boardRouter } from "@routers/board.router";
 import { swaggerRouter } from "@routers/swagger.router";
 import { notFoundRouter } from "@routers/notFound.router";
@@ -11,7 +12,7 @@ const app = express();
 
 app.use(express.json());
 app.use(pino());
-app.use(cors());
+app.use(cors(getCors()));
 
 app.use("/swagger", swaggerRouter);
 app.use("/board", boardRouter);
