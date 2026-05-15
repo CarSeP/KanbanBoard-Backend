@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import { getPinoConfig } from "@services/pino.service";
 import { getCors } from "@services/cors.service";
 import { authMiddleware } from "@middlewares/auth.middleware";
@@ -13,6 +14,7 @@ import { authRouter } from "@routers/auth.router";
 const app = express();
 
 app.use(express.json());
+app.use(cookieParser());
 app.use(getPinoConfig());
 app.use(cors(getCors()));
 app.use("/swagger", swaggerRouter);

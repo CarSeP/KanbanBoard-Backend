@@ -36,12 +36,11 @@ const signInAsGuest = async (req: Request, res: Response) => {
 };
 
 const validateSession = async (req: Request, res: Response) => {
-  const token = req.headers.authorization;
-
+  const token = req.cookies?.auth_token;
   if (!token) {
     return res.status(401).json({
       success: false,
-      message: ["No authentication token provided"],
+      message: ["No authentication cookie provided"],
     });
   }
 
@@ -54,7 +53,7 @@ const validateSession = async (req: Request, res: Response) => {
     });
   }
 
-  return res.status(200).json({ success: true, token });
+  return res.status(200).json({ success: true });
 };
 
 export const authController = {
