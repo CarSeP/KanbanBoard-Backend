@@ -1,35 +1,55 @@
 import { Column } from "@interfaces/column.interface";
 import { ColumnSchema } from "@schemas/column.schema";
 import { prisma } from "@services/prisma.service";
+import { hasPermission } from "./auth.service";
 
 type ColumnType = Omit<Column, "id"> & { id?: number };
 
-export const upsertColumn = async (column: ColumnType): Promise<[Column, string]> => {
+export const upsertColumn = async (column: ColumnType, userId: string) => {
   const exist = await existColumn(column.id);
 
-  if (exist) {
-    return [await updateColumn(column), "update"];
+  const boardId = column.boardId;
+  const canEdit = await hasPermission(userId, boardId, "EDITOR");
+
+  if (!canEdit) {
+    return [null, null, true];
   }
 
-  return [await createColumn(column), "create"];
+  if (exist) {
+    return [await updateColumn(column), "update", false];
+  }
+
+  return [await createColumn(column), "create", false];
 };
 
-export const deleteColumn = async (id: number) => {
+export const deleteColumn = async (id: number, userId: string) => {
   const exist = await existColumn(id);
 
-  if (!exist) return false;
+  if (!exist) return [null, false];
 
-  return await prisma.column.delete({
+  const boardId = exist.boardId;
+  const canDeleteColumn = await hasPermission(userId, boardId, "EDITOR");
+
+  if (!canDeleteColumn) return [null, true];
+
+  const column = await prisma.column.delete({
     where: {
       id,
     },
   });
+
+  return [column, false];
 };
 
-export const moveColumn = async (id: number, order: number) => {
+export const moveColumn = async (id: number, order: number, userId: string) => {
   const exist = await existColumn(id);
 
-  if (!exist) return false;
+  if (!exist) return [false, false];
+
+  const boardId = exist.boardId;
+  const canMoveColumn = await hasPermission(userId, boardId, "EDITOR");
+
+  if (!canMoveColumn) return [false, true];
 
   let condition = null;
   if (exist.order < order) {
@@ -57,7 +77,7 @@ export const moveColumn = async (id: number, order: number) => {
     }),
   ]);
 
-  return column;
+  return [column, false];
 };
 
 export const validateColumn = (object: unknown) => {

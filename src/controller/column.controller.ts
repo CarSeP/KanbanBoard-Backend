@@ -18,7 +18,16 @@ const upsertOne = async (req: Request, res: Response) => {
       });
     }
 
-    const [column, action] = await upsertColumn(body);
+    const userId = req.user.id;
+    const [column, action, permissionError] = await upsertColumn(body, userId);
+
+    if (permissionError) {
+      return res.status(403).json({
+        success: false,
+        message: ["You don't have permission to edit or create a column"],
+      });
+    }
+
     return res.status(200).json({
       success: true,
       column: column,
@@ -35,7 +44,15 @@ const upsertOne = async (req: Request, res: Response) => {
 const deleteOne = async (req: Request, res: Response) => {
   try {
     const id = Number(req.params.id);
-    const column = await deleteColumn(id);
+    const userId = req.user.id;
+    const [column, permissionError] = await deleteColumn(id, userId);
+
+    if (permissionError) {
+      return res.status(403).json({
+        success: false,
+        message: ["You don't have permission to delete this column"],
+      });
+    }
 
     if (!column) {
       return res.status(404).json({
@@ -59,8 +76,16 @@ const moveAll = async (req: Request, res: Response) => {
   try {
     const id = Number(req.params.id);
     const order = Number(req.params.order);
+    const userId = req.user.id;
 
-    const column = await moveColumn(id, order);
+    const [column, permissionError] = await moveColumn(id, order, userId);
+
+    if (permissionError) {
+      return res.status(403).json({
+        success: false,
+        message: ["You don't have permission to move this column"],
+      });
+    }
 
     if (!column) {
       return res.status(404).json({
