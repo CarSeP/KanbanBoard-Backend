@@ -1,0 +1,16 @@
+@authToken =
+@title =
+@content =
+@order =
+@columnId =
+
+PUT http://localhost:3000/card
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "title": "{{title}}",
+  "content": "{{content}}",
+  "order": {{order}},
+  "columnId": "{{columnId}}"
+}

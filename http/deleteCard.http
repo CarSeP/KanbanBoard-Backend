@@ -1,0 +1,5 @@
+@authToken =
+@id =
+
+DELETE http://localhost:3000/card/{{id}}
+Authorization: Bearer {{authToken}}

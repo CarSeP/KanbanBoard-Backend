@@ -1,0 +1,7 @@
+@authToken =
+@id =
+@targetColumnId =
+@order =
+
+POST http://localhost:3000/card/{{id}}/{{targetColumnId}}/{{order}}
+Authorization: Bearer {{authToken}}
