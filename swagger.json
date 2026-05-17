@@ -10,12 +10,48 @@
     "http"
   ],
   "paths": {
-    "/board/": {
+    "/auth/register/guest": {
+      "post": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/auth/validate": {
       "get": {
         "description": "",
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/board/": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "500": {
             "description": "Internal Server Error"
@@ -35,14 +71,19 @@
               "properties": {
                 "id": {
                   "type": "string",
-                  "description": "ID de 7 caracteres (opcional para crear)"
+                  "description": "7-character ID (optional for creation)"
                 },
                 "name": {
                   "type": "string",
-                  "description": "Nombre del board (1-30 caracteres)"
+                  "description": "Board name (1-30 characters)"
                 }
               }
             }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
@@ -51,6 +92,12 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
@@ -67,11 +114,19 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "404": {
             "description": "Not Found"
@@ -89,11 +144,22 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
@@ -118,22 +184,27 @@
               "properties": {
                 "id": {
                   "type": "integer",
-                  "description": "ID auto-incremental (opcional para actualizar)"
+                  "description": "Auto-incremental ID (optional for update)"
                 },
                 "title": {
                   "type": "string",
-                  "description": "Título de la columna (1-50 caracteres)"
+                  "description": "Column title (1-50 characters)"
                 },
                 "order": {
                   "type": "integer",
-                  "description": "Orden de la columna"
+                  "description": "Column order"
                 },
                 "boardId": {
                   "type": "string",
-                  "description": "ID del board al que pertenece (7 caracteres)"
+                  "description": "ID of the board it belongs to (7 characters)"
                 }
               }
             }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
@@ -142,6 +213,12 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
@@ -158,11 +235,22 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
@@ -188,11 +276,22 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
@@ -217,27 +316,32 @@
               "properties": {
                 "id": {
                   "type": "integer",
-                  "description": "ID auto-incremental (opcional para actualizar)"
+                  "description": "Auto-incremental ID (optional for update)"
                 },
                 "title": {
                   "type": "string",
-                  "description": "Título de la tarjeta (1-50 caracteres)"
+                  "description": "Card title (1-50 characters)"
                 },
                 "content": {
                   "type": "string",
                   "x-nullable": true,
-                  "description": "Contenido de la tarjeta (puede ser null)"
+                  "description": "Card content (can be null)"
                 },
                 "order": {
                   "type": "integer",
-                  "description": "Orden de la tarjeta"
+                  "description": "Card order"
                 },
                 "columnId": {
                   "type": "integer",
-                  "description": "ID de la columna a la que pertenece"
+                  "description": "ID of the column it belongs to"
                 }
               }
             }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
@@ -246,6 +350,12 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
@@ -262,11 +372,22 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
@@ -298,11 +419,22 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "404": {
             "description": "Not Found"
