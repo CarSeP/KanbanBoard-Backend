@@ -18,7 +18,7 @@ const getAll = async (req: Request, res: Response) => {
       totalCount,
       boards,
     });
-  } catch (error) {
+  } catch {
     return res.status(500).json({
       success: false,
       message: ["Server error"],
@@ -42,7 +42,7 @@ const getOne = async (req: Request, res: Response) => {
       success: true,
       board,
     });
-  } catch (error) {
+  } catch {
     return res.status(500).json({
       success: false,
       message: ["Server error"],
@@ -74,7 +74,7 @@ const deleteOne = async (req: Request, res: Response) => {
     return res.status(200).json({
       success: true,
     });
-  } catch (error) {
+  } catch {
     return res.status(500).json({
       success: false,
       message: ["Server error"],
@@ -109,7 +109,7 @@ const upsertOne = async (req: Request, res: Response) => {
       board,
       action,
     });
-  } catch (error) {
+  } catch {
     return res.status(500).json({
       success: false,
       message: ["Server error"],

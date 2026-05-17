@@ -41,7 +41,7 @@ export const validateToken = async (token: string): ValidateTokenType => {
     }
 
     return [true, user];
-  } catch (error) {
+  } catch {
     return [false, null];
   }
 };

@@ -65,7 +65,7 @@ const deleteOne = async (req: Request, res: Response) => {
     return res.status(200).json({
       success: true,
     });
-  } catch (error) {
+  } catch {
     return res.status(500).json({
       success: false,
       message: ["Server error"],
@@ -100,7 +100,7 @@ const moveOne = async (req: Request, res: Response) => {
       success: true,
       card,
     });
-  } catch (error) {
+  } catch {
     return res.status(500).json({
       success: false,
       message: ["Server error"],

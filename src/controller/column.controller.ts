@@ -33,7 +33,7 @@ const upsertOne = async (req: Request, res: Response) => {
       column: column,
       action,
     });
-  } catch (error) {
+  } catch {
     return res.status(500).json({
       success: false,
       message: ["Server error"],
@@ -64,7 +64,7 @@ const deleteOne = async (req: Request, res: Response) => {
     return res.status(200).json({
       success: true,
     });
-  } catch (error) {
+  } catch {
     return res.status(500).json({
       success: false,
       message: ["Server error"],
@@ -97,7 +97,7 @@ const moveAll = async (req: Request, res: Response) => {
       success: true,
       column,
     });
-  } catch (error) {
+  } catch {
     return res.status(500).json({
       success: false,
       message: ["Server error"],
