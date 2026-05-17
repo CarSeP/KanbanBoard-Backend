@@ -1,34 +1,71 @@
 import { Card } from "@interfaces/card.interface";
 import { CardSchema } from "@schemas/card.schema";
 import { prisma } from "./prisma.service";
+import { hasPermission } from "./auth.service";
 
 type CardType = Omit<Card, "id"> & { id?: number };
 
-export const upsertCard = async (card: CardType): Promise<[Card, string]> => {
+type UpsertCardType = (
+  card: CardType,
+  userId: string,
+) => Promise<[Card | null, string | null, boolean]>;
+
+export const upsertCard: UpsertCardType = async (card, userId) => {
   const exist = await existCard(card.id);
+  const board = await findBoardByColumnId(card.columnId);
+
+  if (!board) return [null, null, true];
+  const boardId = board.id;
+
+  const canEdit = await hasPermission(userId, boardId, "EDITOR");
+
+  if (!canEdit) return [null, null, true];
 
   if (exist) {
-    return [await updateCard(card), "update"];
+    return [await updateCard(card), "update", false];
   }
 
-  return [await createCard(card), "create"];
+  return [await createCard(card), "create", false];
 };
 
-export const deleteCard = async (id: number) => {
+export const deleteCard = async (id: number, userId: string) => {
   const exist = await existCard(id);
+  const board = await findBoardByCardId(id);
 
-  if (!exist) return false;
+  if (!exist || !board) return [false, false];
 
-  return await prisma.card.delete({
+  const boardId = board.id;
+
+  const canDeleteCard = await hasPermission(userId, boardId, "EDITOR");
+
+  if (!canDeleteCard) return [false, true];
+
+  const card = await prisma.card.delete({
     where: {
       id,
     },
   });
+
+  return [card, false];
 };
 
-export const moveCard = async (id: number, columnId: number, order: number) => {
+type MoveCardType = (
+  id: number,
+  columnId: number,
+  order: number,
+  userId: string,
+) => Promise<[Card | false, boolean]>;
+
+export const moveCard: MoveCardType = async (id, columnId, order, userId) => {
   const exist = await existCard(id);
-  if (!exist) return false;
+  const board = await findBoardByCardId(id);
+
+  if (!exist || !board) return [false, false];
+
+  const boardId = board.id;
+  const canMoveColumn = await hasPermission(userId, boardId, "EDITOR");
+
+  if (!canMoveColumn) return [false, true];
 
   if (exist.columnId === columnId) {
     const shiftCondition =
@@ -50,7 +87,7 @@ export const moveCard = async (id: number, columnId: number, order: number) => {
       }),
     ]);
 
-    return card;
+    return [card, false];
   }
 
   const [, , card] = await prisma.$transaction([
@@ -67,7 +104,7 @@ export const moveCard = async (id: number, columnId: number, order: number) => {
     prisma.card.update({ where: { id }, data: { columnId, order } }),
   ]);
 
-  return card;
+  return [card, false];
 };
 
 export const validateCard = (object: unknown) => {
@@ -88,6 +125,36 @@ export const validateCard = (object: unknown) => {
   return {
     validate: true,
   };
+};
+
+export const findBoardByColumnId = async (columnId: number) => {
+  if (!columnId || typeof columnId == "string") return null;
+
+  const column = await prisma.column.findUnique({
+    where: { id: columnId },
+    include: {
+      board: true,
+    },
+  });
+
+  return column?.board ?? null;
+};
+
+export const findBoardByCardId = async (cardId: number) => {
+  if (!cardId || typeof cardId == "string") return null;
+
+  const card = await prisma.card.findUnique({
+    where: { id: cardId },
+    include: {
+      column: {
+        include: {
+          board: true,
+        },
+      },
+    },
+  });
+
+  return card?.column.board ?? null;
 };
 
 const existCard = async (id: number | undefined) => {
