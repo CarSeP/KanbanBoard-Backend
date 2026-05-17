@@ -9,9 +9,9 @@ export const upsertColumn = async (column: ColumnType, userId: string) => {
   const exist = await existColumn(column.id);
 
   const boardId = column.boardId;
-  const canEdit = await hasPermission(userId, boardId, "EDITOR");
+  const canUpsert = await hasPermission(userId, boardId, "EDITOR");
 
-  if (!canEdit) {
+  if (!canUpsert) {
     return [null, null, true];
   }
 

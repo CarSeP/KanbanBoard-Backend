@@ -17,9 +17,9 @@ export const upsertCard: UpsertCardType = async (card, userId) => {
   if (!board) return [null, null, true];
   const boardId = board.id;
 
-  const canEdit = await hasPermission(userId, boardId, "EDITOR");
+  const canUpsert = await hasPermission(userId, boardId, "EDITOR");
 
-  if (!canEdit) return [null, null, true];
+  if (!canUpsert) return [null, null, true];
 
   if (exist) {
     return [await updateCard(card), "update", false];
