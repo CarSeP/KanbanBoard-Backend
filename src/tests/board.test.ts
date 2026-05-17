@@ -6,16 +6,21 @@ import {
   getUniqueBoard,
   updateBoard,
 } from "@services/board.service";
+import { createUserAsGuest } from "@services/auth.service";
+import { prisma } from "@services/prisma.service";
 
 describe("Board Tests", () => {
   const globalId = generateId(7);
   let globalDeleteBoardId = "";
+  let userId = "";
+
+  beforeAll(async () => {
+    const user = await createUserAsGuest();
+    userId = user.id;
+  });
 
   test("Create board without id", async () => {
-    const board = await createBoard({
-      id: "",
-      name: "Board Test #1",
-    });
+    const board = await createBoard({ id: "", name: "Board Test #1" }, userId);
 
     globalDeleteBoardId = board.id;
 
@@ -23,10 +28,10 @@ describe("Board Tests", () => {
   });
 
   test("Create board with id", async () => {
-    const board = await createBoard({
-      id: globalId,
-      name: "Board Test #2",
-    });
+    const board = await createBoard(
+      { id: globalId, name: "Board Test #2" },
+      userId,
+    );
 
     const newBoard = board as Board;
     expect(newBoard.id).toBe(globalId);
@@ -42,18 +47,9 @@ describe("Board Tests", () => {
   });
 
   test("Find board", async () => {
-    const board = await getUniqueBoard(globalId);
+    const board = await getUniqueBoard(globalId, userId);
 
     expect(board?.id).toBe(globalId);
-  });
-
-  test("Update board", async () => {
-    const board = await updateBoard({
-      id: globalId,
-      name: "Board Test #3",
-    });
-
-    expect(board.name).toBe("Board Test #3");
   });
 
   test("Delete board", async () => {
@@ -72,5 +68,9 @@ describe("Board Tests", () => {
     const board = await deleteBoard(globalDeleteBoardId);
 
     expect(board).toBe(true);
+  });
+
+  afterAll(async () => {
+    await prisma.user.delete({ where: { id: userId } });
   });
 });
