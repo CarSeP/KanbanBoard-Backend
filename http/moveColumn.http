@@ -1,0 +1,6 @@
+@authToken =
+@id =
+@order =
+
+POST http://localhost:3000/column/{{id}}/{{order}}
+Authorization: Bearer {{authToken}}
