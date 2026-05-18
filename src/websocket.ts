@@ -13,8 +13,22 @@ const io = new Server(httpServer, {
 io.on("connection", (socket) => {
   console.log("Client connected");
 
-  socket.on("board", () => {
-    io.emit("board", {});
+  socket.on("board", (data: { boardId?: string }) => {
+    if (data.boardId) {
+      io.to(data.boardId).emit("board", data);
+    } else {
+      io.emit("board", data);
+    }
+  });
+
+  socket.on("joinBoard", (boardId: string) => {
+    socket.join(boardId);
+    console.log(`Client joined board room: ${boardId}`);
+  });
+
+  socket.on("leaveBoard", (boardId: string) => {
+    socket.leave(boardId);
+    console.log(`Client left board room: ${boardId}`);
   });
 
   socket.on("disconnect", () => {
