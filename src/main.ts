@@ -10,6 +10,7 @@ import { notFoundRouter } from "@routers/notFound.router";
 import { columnRouter } from "@routers/column.router";
 import { cardRouter } from "@routers/card.router";
 import { authRouter } from "@routers/auth.router";
+import { invitationRouter } from "@routers/invitation.router";
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use("/swagger", swaggerRouter);
 app.use("/auth", authRouter);
 app.use(authMiddleware);
 app.use("/board", boardRouter);
+app.use("/board", invitationRouter);
 app.use("/column", columnRouter);
 app.use("/card", cardRouter);
 app.use(notFoundRouter);

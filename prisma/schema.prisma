@@ -32,8 +32,9 @@ model User {
   name      String        @db.VarChar(100)
   provider  Provider      @default(GUEST)
   createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
-  boardMembers BoardMember[]
+  updatedAt        DateTime          @updatedAt
+  boardMembers     BoardMember[]
+  boardInvitations BoardInvitation[]
 }
 
 model Board {
@@ -41,8 +42,9 @@ model Board {
   name      String        @db.VarChar(30)
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
-  columns   Column[]
-  boardMembers BoardMember[]
+  columns         Column[]
+  boardMembers    BoardMember[]
+  boardInvitations BoardInvitation[]
 }
 
 model BoardMember {
@@ -57,6 +59,18 @@ model BoardMember {
   @@unique([userId, boardId])
   @@index([userId])
   @@index([boardId])
+}
+
+model BoardInvitation {
+  id          String    @id @default(cuid())
+  board       Board     @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  boardId     String
+  invitedBy   User      @relation(fields: [invitedById], references: [id], onDelete: Cascade)
+  invitedById String
+  role        Role
+  token       String    @unique @db.VarChar(32)
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
 }
 
 model Column {
