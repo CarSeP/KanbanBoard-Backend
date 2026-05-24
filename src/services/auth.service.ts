@@ -46,6 +46,24 @@ export const validateToken = async (token: string): ValidateTokenType => {
   }
 };
 
+export const findOrCreateGoogleUser = async (email: string, name: string) => {
+  const existingUser = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (existingUser) {
+    return existingUser;
+  }
+
+  return await prisma.user.create({
+    data: {
+      email,
+      name,
+      provider: "GOOGLE",
+    },
+  });
+};
+
 export const hasPermission = async (
   userId: string,
   boardId: string,
