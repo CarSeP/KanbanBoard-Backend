@@ -55,6 +55,21 @@ const validateSession = async (req: Request, res: Response) => {
     });
   }
 
+  const { id, name, email, provider } = user;
+
+  return res.status(200).json({
+    success: true,
+    user: { id, name, email, provider },
+  });
+};
+
+const signOut = async (_req: Request, res: Response) => {
+  res.clearCookie("auth_token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+  });
+
   return res.status(200).json({ success: true });
 };
 
@@ -106,6 +121,7 @@ const googleCallback = async (req: Request, res: Response) => {
 export const authController = {
   signInAsGuest,
   validateSession,
+  signOut,
   signInWithGoogle,
   googleCallback,
 };
