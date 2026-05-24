@@ -12,7 +12,7 @@
   "paths": {
     "/auth/register/guest": {
       "post": {
-        "description": "",
+        "description": "Register or sign in as a guest user. Creates a user with random name and issues a JWT cookie.",
         "responses": {
           "200": {
             "description": "OK"
@@ -25,7 +25,7 @@
     },
     "/auth/validate": {
       "get": {
-        "description": "",
+        "description": "Validate the current session/token. Returns user info if valid.",
         "responses": {
           "200": {
             "description": "OK"
@@ -36,9 +36,54 @@
         }
       }
     },
+    "/auth/logout": {
+      "post": {
+        "description": "Sign out the current user by clearing the auth_token cookie.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/auth/google": {
+      "get": {
+        "description": "Initiate Google OAuth sign-in. Redirects to Google's consent page.",
+        "responses": {
+          "302": {
+            "description": "Redirect to Google OAuth"
+          }
+        }
+      }
+    },
+    "/auth/google/callback": {
+      "get": {
+        "description": "Google OAuth callback. Handles the authorization code, creates/finds user, sets auth cookie, and redirects to frontend.",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "description": "Authorization code from Google"
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Redirect to frontend on success"
+          },
+          "400": {
+            "description": "Bad Request - Missing or invalid authorization code"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/board/": {
       "get": {
-        "description": "",
+        "description": "Get all boards where the authenticated user is a member.",
         "parameters": [
           {
             "name": "authorization",
@@ -59,7 +104,7 @@
         }
       },
       "put": {
-        "description": "",
+        "description": "Create a new board or update an existing one. If id is provided, updates; otherwise creates.",
         "parameters": [
           {
             "name": "body",
@@ -107,7 +152,7 @@
     },
     "/board/{id}": {
       "get": {
-        "description": "",
+        "description": "Get a single board by its 7-character ID, if the user is a member.",
         "parameters": [
           {
             "name": "id",
@@ -137,7 +182,7 @@
         }
       },
       "delete": {
-        "description": "",
+        "description": "Delete a board by its ID. Only the board owner can delete.",
         "parameters": [
           {
             "name": "id",
@@ -170,9 +215,166 @@
         }
       }
     },
+    "/board/{boardId}/invite/link": {
+      "post": {
+        "description": "Create a shareable invitation link for a board.",
+        "parameters": [
+          {
+            "name": "boardId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Board ID (7 characters)"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["role"],
+              "properties": {
+                "role": {
+                  "type": "string",
+                  "enum": ["ADMIN", "EDITOR", "VIEWER"],
+                  "description": "Role to assign to the invited user"
+                },
+                "expiresIn": {
+                  "type": "integer",
+                  "description": "Expiration time in seconds (optional)"
+                }
+              }
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK - Returns the invitation object"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden - User lacks permission to invite with this role"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/board/{boardId}/invite/user": {
+      "post": {
+        "description": "Directly invite a specific user to a board.",
+        "parameters": [
+          {
+            "name": "boardId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Board ID (7 characters)"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["userId", "role"],
+              "properties": {
+                "userId": {
+                  "type": "string",
+                  "description": "ID of the user to invite"
+                },
+                "role": {
+                  "type": "string",
+                  "enum": ["ADMIN", "EDITOR", "VIEWER"],
+                  "description": "Role to assign to the invited user"
+                }
+              }
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK - Returns the board member record"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden - User lacks permission to assign this role"
+          },
+          "404": {
+            "description": "Not Found - Target user not found"
+          },
+          "409": {
+            "description": "Conflict - User is already a member"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/board/invite/accept/{token}": {
+      "post": {
+        "description": "Accept a board invitation using the token from an invitation link.",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Invitation token"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK - Returns the board member record"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found - Invitation not found"
+          },
+          "409": {
+            "description": "Conflict - User is already a member"
+          },
+          "410": {
+            "description": "Gone - Invitation has expired"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/column/": {
       "put": {
-        "description": "",
+        "description": "Create a new column or update an existing one. If id is provided, updates; otherwise creates.",
         "parameters": [
           {
             "name": "body",
@@ -228,7 +430,7 @@
     },
     "/column/{id}": {
       "delete": {
-        "description": "",
+        "description": "Delete a column by its numeric ID if the user has permission on the board.",
         "parameters": [
           {
             "name": "id",
@@ -263,7 +465,7 @@
     },
     "/column/{id}/{order}": {
       "post": {
-        "description": "",
+        "description": "Move a column to a new order position within its board.",
         "parameters": [
           {
             "name": "id",
@@ -304,7 +506,7 @@
     },
     "/card/": {
       "put": {
-        "description": "",
+        "description": "Create a new card or update an existing one. If id is provided, updates; otherwise creates.",
         "parameters": [
           {
             "name": "body",
@@ -365,7 +567,7 @@
     },
     "/card/{id}": {
       "delete": {
-        "description": "",
+        "description": "Delete a card by its numeric ID if the user has permission.",
         "parameters": [
           {
             "name": "id",
@@ -400,7 +602,7 @@
     },
     "/card/{id}/{columnId}/{order}": {
       "post": {
-        "description": "",
+        "description": "Move a card to a different column and/or order position.",
         "parameters": [
           {
             "name": "id",
