@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { readFile } from "fs/promises";
+import { join } from "path";
 
 export async function swaggerMiddleware(
   req: Request,
@@ -14,7 +15,7 @@ export async function swaggerMiddleware(
       });
     }
 
-    await readFile(new URL("../../swagger.json", import.meta.url));
+    await readFile(join(__dirname, "..", "..", "swagger.json"));
 
     next();
   } catch {

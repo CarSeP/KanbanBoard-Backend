@@ -1,6 +1,6 @@
-import { verifyDatabaseConnection } from "./src/services/prisma.service";
-import app from "./src/main";
-import "./src/websocket"
+import { verifyDatabaseConnection } from "./services/prisma.service";
+import app from "./main";
+import "./websocket"
 
 const port = process.env.PORT || 3000;
 
