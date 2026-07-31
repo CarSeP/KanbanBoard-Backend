@@ -19,7 +19,6 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(getPinoConfig());
 app.use(cors(getCors()));
 app.use("/swagger", swaggerRouter);
 app.use("/auth", authRouter);
